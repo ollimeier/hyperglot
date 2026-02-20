@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hyperglot"
+dynamic = ["version"]
+requires-python = ">3.10.0"
+description = "Detect language support for font binaries"
+readme = "README.md"
+license = "Apache-2.0"
+authors = [
+    { name = "Johannes Neumeier - Rosetta", email = "johannes@rosettatype.com" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "Operating System :: OS Independent",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Information Technology",
+    "Topic :: Text Processing :: Fonts",
+    "Topic :: Text Processing :: Linguistic",
+]
+dependencies = [
+    "packaging>=26.0",
+    "click>=7.0",
+    "fonttools>=4.50.0",
+    "uharfbuzz>=0.39.0",
+    "pyyaml>=6.0.0",
+    "colorlog>=6.4.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "tox"]
+build = ["build", "twine"]
+
+[project.urls]
+Homepage = "https://github.com/rosettatype/hyperglot"
+"Hyperglot web interface" = "https://hyperglot.rosettatype.com"
+
+[project.scripts]
+hyperglot = "hyperglot.cli:cli"
+hyperglot-report = "hyperglot.cli:report"
+hyperglot-data = "hyperglot.cli:data"
+hyperglot-validate = "hyperglot.validate:validate"
+hyperglot-save = "hyperglot.cli:save_sorted"
+hyperglot-export = "hyperglot.cli:export"
+
+[tool.setuptools]
+package-dir = {"" = "lib"}
+packages = ["hyperglot", "hyperglot.checks"]
+
+[tool.setuptools.dynamic]
+version = {attr = "hyperglot.__version__"}
+
+[tool.setuptools.package-data]
+hyperglot = ["data/*.yaml", "extra_data/*"]
