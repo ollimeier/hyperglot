@@ -7,6 +7,14 @@ log = logging.getLogger(__name__)
 
 
 class Check(CheckBase):
+    """
+    Check to confirm halfform shaping for unencoded combinations, e.g.
+    consonant + virama in Devanagari.
+
+    To find the half form constituents the checks looks at the 'combinations'
+    orthography attribute and filters for clusters of the form 
+    consonant + virama.
+    """
 
     conditions = {
         "script": "Devanagari",

@@ -8,6 +8,10 @@ log = logging.getLogger(__name__)
 
 
 class Check(CheckBase):
+    """
+    Check mark attachment for unencoded combinations, e.g.
+    consonant + virama + consonant in Devanagari.
+    """
 
     conditions = {
         "script": "Devanagari",

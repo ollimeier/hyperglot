@@ -11,7 +11,7 @@ import unicodedata as uni
 from hyperglot import SupportLevel, OrthographyStatus
 from hyperglot.language import Language
 from hyperglot.parse import character_list_from_string, parse_font_chars, parse_marks
-from hyperglot.checker import CharsetChecker, FontChecker
+from hyperglot.checker import CharsetChecker, FontChecker, Checker
 
 
 # Just a most simple placeholder charset
@@ -279,28 +279,87 @@ def test_status_options(caplog):
     # skipped language is logged for the unchecked status:
 
     blanko_checker.get_supported_languages(status=["living"])
-    assert len([c for c in caplog.records if "Skipping 'historical' language 'akk'" in c.msg]) == 1
-    assert len([c for c in caplog.records if "Skipping 'living' language" in c.msg]) == 0
-    assert len([c for c in caplog.records if "Skipping 'constructed' language 'tlh'" in c.msg]) == 1
+    assert (
+        len(
+            [
+                c
+                for c in caplog.records
+                if "Skipping 'historical' language 'akk'" in c.msg
+            ]
+        )
+        == 1
+    )
+    assert (
+        len([c for c in caplog.records if "Skipping 'living' language" in c.msg]) == 0
+    )
+    assert (
+        len(
+            [
+                c
+                for c in caplog.records
+                if "Skipping 'constructed' language 'tlh'" in c.msg
+            ]
+        )
+        == 1
+    )
     caplog.clear()
 
     blanko_checker.get_supported_languages(status=["historical"])
-    assert len([c for c in caplog.records if "Skipping 'historical' language" in c.msg]) == 0
-    assert len([c for c in caplog.records if "Skipping 'living' language 'eng'" in c.msg]) == 1
-    assert len([c for c in caplog.records if "Skipping 'constructed' language 'tlh'" in c.msg]) == 1
+    assert (
+        len([c for c in caplog.records if "Skipping 'historical' language" in c.msg])
+        == 0
+    )
+    assert (
+        len([c for c in caplog.records if "Skipping 'living' language 'eng'" in c.msg])
+        == 1
+    )
+    assert (
+        len(
+            [
+                c
+                for c in caplog.records
+                if "Skipping 'constructed' language 'tlh'" in c.msg
+            ]
+        )
+        == 1
+    )
     caplog.clear()
 
     blanko_checker.get_supported_languages(status=["constructed"])
-    assert len([c for c in caplog.records if "Skipping 'historical' language 'akk'" in c.msg]) == 1
-    assert len([c for c in caplog.records if "Skipping 'living' language 'eng'" in c.msg]) == 1
-    assert len([c for c in caplog.records if "Skipping 'constructed' language" in c.msg]) == 0
+    assert (
+        len(
+            [
+                c
+                for c in caplog.records
+                if "Skipping 'historical' language 'akk'" in c.msg
+            ]
+        )
+        == 1
+    )
+    assert (
+        len([c for c in caplog.records if "Skipping 'living' language 'eng'" in c.msg])
+        == 1
+    )
+    assert (
+        len([c for c in caplog.records if "Skipping 'constructed' language" in c.msg])
+        == 0
+    )
     caplog.clear()
 
     # Check a combination
     blanko_checker.get_supported_languages(status=["historical", "constructed"])
-    assert len([c for c in caplog.records if "Skipping 'historical' language" in c.msg]) == 0
-    assert len([c for c in caplog.records if "Skipping 'living' language 'eng'" in c.msg]) == 1
-    assert len([c for c in caplog.records if "Skipping 'constructed' language" in c.msg]) == 0
+    assert (
+        len([c for c in caplog.records if "Skipping 'historical' language" in c.msg])
+        == 0
+    )
+    assert (
+        len([c for c in caplog.records if "Skipping 'living' language 'eng'" in c.msg])
+        == 1
+    )
+    assert (
+        len([c for c in caplog.records if "Skipping 'constructed' language" in c.msg])
+        == 0
+    )
     caplog.clear()
 
 
@@ -459,13 +518,16 @@ def test_font_checker_logging_names():
 
 def test_checker_load_checks():
     # Make sure the checker properly matches some basic checks
-    checker = FontChecker(roboto)
 
-    hin_checks = checker._get_checks_for_orthography(Language("hin").get_orthography())
+    hin_checks = Checker._get_checks_for_orthography(
+        Language("hin").get_orthography(), perform_shaping_checks=True
+    )
     assert "check_brahmi_conjuncts" in [c[0] for c in hin_checks]
     assert "check_brahmi_halfforms" in [c[0] for c in hin_checks]
 
-    fin_checks = checker._get_checks_for_orthography(Language("fin").get_orthography())
+    fin_checks = Checker._get_checks_for_orthography(
+        Language("fin").get_orthography(), perform_shaping_checks=True
+    )
     assert "check_coverage" in [c[0] for c in fin_checks]
     assert "check_brahmi_conjuncts" not in [c[0] for c in fin_checks]
 

@@ -10,6 +10,16 @@ log = logging.getLogger(__name__)
 
 
 class Check(CheckBase):
+    """
+    Check to confirm conjunct formation for unencoded combinations, e.g.
+    consonant + virama + consonant in Devanagari, based off the 'combinations'
+    orthography attribute.
+
+    The threshold option can be used to fine tune the granularity of the check,
+    e.g. allowing for less frequently used conjuncts to not cause the check to
+    fail, if below this threshold (based on 'combinations' frequency data from
+    a parsed language corpus) 
+    """
 
     conditions = {
         "script": "Devanagari",

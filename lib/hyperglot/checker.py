@@ -6,7 +6,13 @@ import importlib.util
 from typing import List, Set
 from collections.abc import Iterable
 
-from hyperglot import DB_CHECKS, SupportLevel, LanguageValidity, OrthographyStatus, LanguageStatus
+from hyperglot import (
+    DB_CHECKS,
+    SupportLevel,
+    LanguageValidity,
+    OrthographyStatus,
+    LanguageStatus,
+)
 from hyperglot.checkbase import CheckBase
 from hyperglot.shaper import Shaper
 from hyperglot.languages import Languages
@@ -42,7 +48,10 @@ class Checker:
         self.font = None
         self.shaper = None
 
-    def _get_checks_for_orthography(self, orthography: Orthography):
+    @classmethod
+    def _get_checks_for_orthography(
+        cls, orthography: Orthography, perform_shaping_checks: bool = False
+    ) -> List[tuple[str, int, CheckBase]]:
         """
         Parse lib/hyperglot/checks and return all Check classes where
         conditions are satisfied for this language.
@@ -71,7 +80,7 @@ class Checker:
                 raise Exception(f"Check {module_name} needs to subclass CheckBase!")
 
             # Ignore checks that only run when checking with a font
-            if check.requires_font and self.shaper is None:
+            if check.requires_font and not perform_shaping_checks:
                 continue
 
             fulfills = True
@@ -279,9 +288,11 @@ class Checker:
 
         for ort in orthographies:
             supported = True
-            checks = self._get_checks_for_orthography(ort)
+            checks = self._get_checks_for_orthography(
+                orthography=ort, perform_shaping_checks=self.shaper is not None
+            )
 
-            # FIXME TBD Run all checks, even after one has failed, to get 
+            # FIXME TBD Run all checks, even after one has failed, to get
             # logging output
             for check_name, _priority, c in checks:
                 result = c.check(

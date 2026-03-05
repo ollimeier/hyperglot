@@ -15,6 +15,14 @@ log.setLevel(logging.WARNING)
 class Check(CheckBase):
     """
     Check the joining behavior of all Arabic characters.
+
+    The check works by comparing the shaping of a character on its own to the
+    shaping of the same character when joined with zero width joiners, which
+    should cause it to join.
+
+    The check is only performed for characters with a joining type of D, R, L,
+    or T, which require joining behavior which are defined in unicode and
+    saved in lib/hyperglot/extra_data/joining-types.yaml
     """
 
     conditions = {

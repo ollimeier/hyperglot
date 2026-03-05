@@ -14,6 +14,18 @@ log.setLevel(logging.WARNING)
 
 
 class Check(CheckBase):
+    """
+    Check to confirm mark attachment between base (and auxiliary) characters and marks.
+
+    - By default checks only base + mark.
+    - By default checks only unencoded base + mark combinations, but can be 
+        configured to also check decomposed combinations that do not exist 
+        precomposed in the characters.
+
+    Confirms input is indeed base letter and non-spacing mark. The check works
+    by comparing the positions or marks in the harfbuzz buffer to see it
+    actually moved, e.g. _something_ in GPOS attached the mark to the base.
+    """
 
     conditions = {
         "attributes": ("base", "auxiliary", "mark"),
