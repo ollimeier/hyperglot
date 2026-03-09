@@ -3,6 +3,7 @@ import logging
 from typing import Tuple
 
 from hyperglot.checkbase import BrahmiBaseCheck
+from hyperglot.checker import Checker
 from hyperglot.orthography import Orthography
 from hyperglot.shaper import Shaper
 
@@ -25,6 +26,17 @@ class Check(BrahmiBaseCheck):
 
     priority = 50
     logger = logging.getLogger("hyperglot.reporting.conjuncts")
+
+    def precheck(self, orthography: Orthography, checker: Checker, **kwargs) -> bool:
+        super().precheck(orthography, checker, **kwargs)
+
+        self.conjuncts = dict(
+            filter(self.filter_conjuncts, orthography.combinations.items())
+        )
+        if self.conjuncts == {}:
+            return False
+
+        return True
 
     def check(self, orthography: Orthography, checker, **kwargs) -> bool:
         """
@@ -49,20 +61,12 @@ class Check(BrahmiBaseCheck):
 
         super().check(orthography, checker, **kwargs)
 
-        if not orthography.combinations:
-            return True
-        conjuncts = dict(
-            filter(self.filter_conjuncts, orthography.combinations.items())
-        )
-        if conjuncts == {}:
-            return True
-
         # Iterate all syllables to provide reporting.
         # TODO exit early if no reporting is set
 
         fails_over_threshold = False
 
-        for conjunct, frequency in conjuncts.items():
+        for conjunct, frequency in self.conjuncts.items():
             fails = False
             # Ensure no .notdef are left over
             if not self.check_all_render(conjunct, checker.shaper):

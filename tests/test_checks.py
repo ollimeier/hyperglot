@@ -430,6 +430,17 @@ def test_precheck():
     empty = Orthography(data={})
     assert CheckMarkAttachment().precheck(empty, CharsetChecker([])) is False
 
-    # Same for a Davanagari orthography with an empty combinations list
+    # A Devanagari orthography combinations would opt in from attributes, but
+    # should opt-out when it cannot actually find any conjuncts from the
+    # combinations
     deva = Orthography(data={"script": "Devanagari", "combinations": []})
     assert CheckBrahmiConjuncts().precheck(deva, CharsetChecker([])) is False
+
+    # A Devanagari orthography without combinations should get filtered out by
+    # the precheck
+    mar = Language("mar").get_orthography()
+    assert CheckBrahmiConjuncts().precheck(mar, CharsetChecker([])) is False
+
+    # A Devanagari orthography with combinations should pass the precheck
+    hin = Language("hin").get_orthography()
+    assert CheckBrahmiConjuncts().precheck(hin, CharsetChecker([])) is True

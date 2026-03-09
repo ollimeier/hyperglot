@@ -41,15 +41,19 @@ class Check(CheckBase):
         checker: Checker,
         **kwargs,
     ) -> bool:
-        super().precheck(orthography, checker, **kwargs)
+        if not super().precheck(orthography, checker, **kwargs):
+            return False
 
-        if all(
-            (
-                len(orthography.base_chars) == 0,
-                len(orthography.auxiliary_chars) == 0,
-                len(orthography.base_marks) == 0,
-                len(orthography.auxiliary_marks) == 0,
-            )
+        if (
+            SupportLevel.AUX.value in self.options["check"]
+            and len(orthography.base_marks) == 0
+            and len(orthography.auxiliary_marks) == 0
+        ):
+            return False
+
+        if (
+            SupportLevel.BASE.value in self.options["check"]
+            and len(orthography.base_marks) == 0
         ):
             return False
 

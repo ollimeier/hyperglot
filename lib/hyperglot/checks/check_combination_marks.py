@@ -19,8 +19,8 @@ class Check(BrahmiBaseCheck):
     logger = logging.getLogger("hyperglot.reporting.marks")
 
     def check(self, orthography, checker, **kwargs):
-        if not orthography.combinations:
-            return True
+
+        super().check(orthography, checker, **kwargs)
 
         for c in orthography.combinations.keys():
             if not self.check_cluster_mark_attachment(c, checker.shaper):
