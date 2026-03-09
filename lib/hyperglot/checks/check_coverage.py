@@ -44,7 +44,11 @@ class Check(CheckBase):
             chars = set()
             supported[attr] = False
 
-            if attr in (SupportLevel.PUNCTUATION.value, SupportLevel.NUMERALS.value, SupportLevel.CURRENCY.value):
+            if attr in (
+                SupportLevel.PUNCTUATION.value,
+                SupportLevel.NUMERALS.value,
+                SupportLevel.CURRENCY.value,
+            ):
                 # For these attributes, if there is no data the orthography passes!
                 chars = set(getattr(ort, attr, None))
                 if not chars:
@@ -71,7 +75,7 @@ class Check(CheckBase):
                         decomposed_char = set(parse_chars(c))
                         if not decomposed_char.issubset(checker.characters):
                             supported[attr] = False
-            
+
             if attr == SupportLevel.AUX.value:
                 # Get the attribute chars, with all or only required marks
                 chars = ort.get_chars(attr, options["marks"])
@@ -100,5 +104,5 @@ class Check(CheckBase):
                     )
 
                 support = False
-            
+
         return support

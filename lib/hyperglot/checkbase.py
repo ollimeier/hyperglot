@@ -61,6 +61,13 @@ class CheckBase:
         # reporting entries that should get output "higher" up in the check run.
         self.logs = []
 
+    def prepare(self, orthography, checker):
+        """
+        Optional method to prepare the check for a given orthography and checker,
+        e.g. by precomputing some data or doing some pre-checks.
+        """
+        return True
+
     def check(self):
         raise NotImplementedError("Checks need to implement check method!")
 
@@ -95,7 +102,6 @@ class CheckBase:
         """
         options = {
             "check": [SupportLevel.BASE.value],
-            "validity": LanguageValidity.DRAFT.value,
             "decomposed": False,
             "marks": False,
             "report_missing": -1,
