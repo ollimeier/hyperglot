@@ -48,9 +48,9 @@ class Check(CheckBase):
         Ka + virama + Ka → KKa
         ZWJ ensures a half form is rendered instead:
         Ka + virama + ZWJ + Ka → K- + Ka
-
         """
-        options = self._get_options(**kwargs)
+
+        super().check(orthography, checker, **kwargs)
 
         if not orthography.combinations:
             return True
@@ -75,9 +75,9 @@ class Check(CheckBase):
                 fails = True
 
             if fails:
-                fmt_threshold = str(options["threshold"]).format(".5f")
+                fmt_threshold = str(self.options["threshold"]).format(".5f")
 
-                if frequency > options["threshold"]:
+                if frequency > self.options["threshold"]:
                     log.error(
                         f"Conjunct '{conjunct}' ({frequency:.5f}) does not shape "
                         f"but is required by frequency threshold ({fmt_threshold})."

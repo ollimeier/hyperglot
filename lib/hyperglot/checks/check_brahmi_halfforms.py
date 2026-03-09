@@ -12,7 +12,7 @@ class Check(CheckBase):
     consonant + virama in Devanagari.
 
     To find the half form constituents the checks looks at the 'combinations'
-    orthography attribute and filters for clusters of the form 
+    orthography attribute and filters for clusters of the form
     consonant + virama.
     """
 
@@ -25,6 +25,8 @@ class Check(CheckBase):
     logger = logging.getLogger("hyperglot.reporting.halfforms")
 
     def check(self, orthography, checker, **kwargs):
+        super().check(orthography, checker, **kwargs)
+
         if not orthography.combinations:
             return True
 

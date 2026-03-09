@@ -18,8 +18,8 @@ class Check(CheckBase):
     Check to confirm mark attachment between base (and auxiliary) characters and marks.
 
     - By default checks only base + mark.
-    - By default checks only unencoded base + mark combinations, but can be 
-        configured to also check decomposed combinations that do not exist 
+    - By default checks only unencoded base + mark combinations, but can be
+        configured to also check decomposed combinations that do not exist
         precomposed in the characters.
 
     Confirms input is indeed base letter and non-spacing mark. The check works
@@ -39,12 +39,12 @@ class Check(CheckBase):
         Check the mark attachment for the orthography.
         """
 
-        options = self._get_options(**kwargs)
+        super().check(orthography, checker, **kwargs)
 
         check_attachment = []
 
         chars = orthography.base
-        if SupportLevel.AUX.value in options["check"]:
+        if SupportLevel.AUX.value in self.options["check"]:
             chars.extend(orthography.auxiliary)
 
         # Mark positioning needs to at least work for all unencoded
@@ -53,7 +53,7 @@ class Check(CheckBase):
 
         # If checking against decomposed characters also base + mark combinations
         # that do not exist precomposed in the characters need to be checked.
-        if options["decomposed"]:
+        if self.options["decomposed"]:
             check_attachment.extend([c for c in chars if c not in checker.characters])
 
         missing_positioning = []

@@ -37,10 +37,11 @@ class Check(CheckBase):
     logger = logging.getLogger("hyperglot.reporting.joining")
 
     def check(self, orthography: Orthography, checker: Checker, **kwargs):
-        options = self._get_options(**kwargs)
+
+        super().check(orthography, checker, **kwargs)
 
         chars = orthography.base
-        if SupportLevel.AUX.value in options["check"]:
+        if SupportLevel.AUX.value in self.options["check"]:
             chars.extend(orthography.auxiliary)
 
         require_shaping = [

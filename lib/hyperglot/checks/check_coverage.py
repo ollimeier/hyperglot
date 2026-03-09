@@ -29,18 +29,19 @@ class Check(CheckBase):
     priority = 10
     logger = logging.getLogger("hyperglot.reporting.missing")
 
-    def check(self, ort: Orthography, checker: Checker, **kwargs) -> bool:
+    def check(self, orthography: Orthography, checker: Checker, **kwargs) -> bool:
+
+        super().check(orthography, checker, **kwargs)
 
         support = True
         supported = {}
 
-        options = self._get_options(**kwargs)
-
         # The coverage checks require a bit fine tuning for each attribute
         # - all attributes require basic characters to be present
-        # - base/aux need to consider the required marks of unencoded combinations
+        # - base/aux need to consider the required marks of unencoded
+        #   combinations
 
-        for attr in options["check"]:
+        for attr in self.options["check"]:
             chars = set()
             supported[attr] = False
 
@@ -49,8 +50,9 @@ class Check(CheckBase):
                 SupportLevel.NUMERALS.value,
                 SupportLevel.CURRENCY.value,
             ):
-                # For these attributes, if there is no data the orthography passes!
-                chars = set(getattr(ort, attr, None))
+                # For these attributes, if there is no data the orthography
+                # passes!
+                chars = set(getattr(orthography, attr, None))
                 if not chars:
                     supported[attr] = True
                 else:
@@ -58,13 +60,13 @@ class Check(CheckBase):
 
             if attr == SupportLevel.BASE.value:
                 # Get the attribute chars, with all or only required marks
-                chars = ort.get_chars(attr, options["marks"])
+                chars = orthography.get_chars(attr, self.options["marks"])
 
                 if not chars:
                     supported[attr] = False
 
                 # Check for coverage, but consider decomposed option:
-                if not options["decomposed"]:
+                if not self.options["decomposed"]:
                     supported[attr] = chars.issubset(checker.characters)
                 else:
                     # If we accept that a set of characters matches for a
@@ -78,15 +80,15 @@ class Check(CheckBase):
 
             if attr == SupportLevel.AUX.value:
                 # Get the attribute chars, with all or only required marks
-                chars = ort.get_chars(attr, options["marks"])
-                if options["marks"]:
-                    req_marks_aux = ort.auxiliary_marks
+                chars = orthography.get_chars(attr, self.options["marks"])
+                if self.options["marks"]:
+                    req_marks_aux = orthography.auxiliary_marks
                 else:
                     # If not including _all_ marks, we still require support
                     # for any unencoded char + mark combination marks
-                    req_marks_aux = ort.required_auxiliary_marks
+                    req_marks_aux = orthography.required_auxiliary_marks
 
-                chars = set(ort.auxiliary_chars + req_marks_aux)
+                chars = set(orthography.auxiliary_chars + req_marks_aux)
                 supported[attr] = chars.issubset(checker.characters)
 
             # Logging and set overall support

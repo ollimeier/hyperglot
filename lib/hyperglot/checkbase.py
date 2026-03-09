@@ -1,7 +1,6 @@
 import logging
 
-from hyperglot import SupportLevel, LanguageValidity
-from hyperglot.shaper import Shaper
+from hyperglot import SupportLevel
 
 
 class CheckBase:
@@ -58,24 +57,57 @@ class CheckBase:
 
     def __init__(self):
         # Use any module logger to output code issues, append to self.logs
-        # reporting entries that should get output "higher" up in the check run.
+        # reporting entries that should get output "higher" up in the check
+        # run.
         self.logs = []
 
-    def prepare(self, orthography, checker):
+    def precheck(
+        self,
+        orthography: "hyperglot.Orthography",
+        checker: "hyperglot.Checker",
+        **kwargs,
+    ) -> bool:
         """
-        Optional method to prepare the check for a given orthography and checker,
-        e.g. by precomputing some data or doing some pre-checks.
+        Optional subclass method to precheck the check for a given orthography
+        and checker, e.g. by precomputing some data or doing some pre-checks.
+
+        Return True if the check should run, False if it should be skipped as
+        unnecessary.
         """
+
+        # The compiled options for this check, after a orthography and checker
+        # have been passed.
+        self.options = self._get_options(**kwargs)
+
+        # Subclassing this method can return False here to skip early.
         return True
 
-    def check(self):
-        raise NotImplementedError("Checks need to implement check method!")
+    def check(
+        self,
+        orthography: "hyperglot.Orthography",
+        checker: "hyperglot.Checker",
+        **kwargs,
+    ) -> bool:
+        """
+        Run the check, return True if it passes, False if it fails.
 
-    def check_all_render(self, input: str, shaper: Shaper) -> bool:
+        Subclasses should implement the actual check logic here, and call
+        this super class first, optionally overwriting also precheck to
+        prepare data.
+        """
+
+        # Run precheck to prepare check and determine early on if it can be
+        # skipped altogether.
+        if not self.precheck(orthography, checker, **kwargs):
+            return True
+
+        return False
+
+    def check_all_render(self, input: str, shaper: "hyperglot.Shaper") -> bool:
         """
         Check an input string renders in the font without leaving any notdef or
-        dotted circles. As a fairly general check this may be useful in multiple
-        check implementations.
+        dotted circles. As a fairly general check this may be useful in
+        multiple check implementations.
         """
         dotted_circle_cp = shaper.font.get_nominal_glyph(ord(self.DOTTED_CIRCLE))
 
