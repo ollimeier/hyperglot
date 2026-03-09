@@ -44,7 +44,7 @@ class Checker:
 
     def __init__(self, fontpath: str = None, characters: List = None):
         self.fontpath = fontpath
-        self.characters = characters
+        self.characters = characters if characters is not None else []
         self.font = None
         self.shaper = None
 

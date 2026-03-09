@@ -1,23 +1,20 @@
 import logging
 import unicodedata
 
-from hyperglot.checkbase import CheckBase
+from hyperglot.checkbase import BrahmiBaseCheck
 from hyperglot.shaper import Shaper
 
 log = logging.getLogger(__name__)
 
 
-class Check(CheckBase):
+class Check(BrahmiBaseCheck):
     """
     Check mark attachment for unencoded combinations, e.g.
     consonant + virama + consonant in Devanagari.
     """
 
-    conditions = {
-        "script": "Devanagari",
-        "attributes": ("combinations",),
-    }
-    requires_font = True
+    # conditions and requires_font from BrahmiBaseCheck
+
     priority = 75
     logger = logging.getLogger("hyperglot.reporting.marks")
 

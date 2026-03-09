@@ -81,13 +81,16 @@ class CheckBase:
 
         Return True if the check should run, False if it should be skipped as
         unnecessary.
+
+        When subclassing, run this method first, and return False to skip the
+        check early if it is not necessary.
         """
 
         # The compiled options for this check, after a orthography and checker
         # have been passed.
         self.options = self._get_options(**kwargs)
 
-        # Subclassing this method can return False here to skip early.
+        # Subclassing this method must return a bool here.
         return True
 
     def check(
@@ -104,8 +107,8 @@ class CheckBase:
         prepare data.
         """
 
-        # Run precheck to prepare check and determine early on if it can be
-        # skipped altogether.
+        # Run precheck to prepare check and determine early on if it indicated
+        # it can be skipped altogether (passes).
         if not self.precheck(orthography, checker, **kwargs):
             return True
 
@@ -163,3 +166,27 @@ class CheckBase:
                 return category
 
         return None
+
+
+class BrahmiBaseCheck(CheckBase):
+    """
+    A more specific base check for Brahmi scripts.
+    """
+
+    conditions = {
+        "script": "Devanagari",
+        "attributes": ("combinations",),
+    }
+    requires_font = True
+
+    def precheck(
+        self,
+        orthography: Orthography,
+        checker: Checker,
+        **kwargs,
+    ) -> bool:
+        super().precheck(orthography, checker, **kwargs)
+        if not orthography.combinations:
+            return False
+
+        return True

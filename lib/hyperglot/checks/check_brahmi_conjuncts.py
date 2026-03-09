@@ -2,14 +2,14 @@ import re
 import logging
 from typing import Tuple
 
-from hyperglot.checkbase import CheckBase
+from hyperglot.checkbase import BrahmiBaseCheck
 from hyperglot.orthography import Orthography
 from hyperglot.shaper import Shaper
 
 log = logging.getLogger(__name__)
 
 
-class Check(CheckBase):
+class Check(BrahmiBaseCheck):
     """
     Check to confirm conjunct formation for unencoded combinations, e.g.
     consonant + virama + consonant in Devanagari, based off the 'combinations'
@@ -18,14 +18,11 @@ class Check(CheckBase):
     The threshold option can be used to fine tune the granularity of the check,
     e.g. allowing for less frequently used conjuncts to not cause the check to
     fail, if below this threshold (based on 'combinations' frequency data from
-    a parsed language corpus) 
+    a parsed language corpus)
     """
 
-    conditions = {
-        "script": "Devanagari",
-        "attributes": ("combinations",),
-    }
-    requires_font = True
+    # conditions and requires_font from BrahmiBaseCheck
+
     priority = 50
     logger = logging.getLogger("hyperglot.reporting.conjuncts")
 

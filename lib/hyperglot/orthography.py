@@ -428,8 +428,6 @@ note: {note}
             for c in self["combinations"]:
                 if isinstance(c, dict):
                     d.update(c)
-                # elif isinstance(c, list):
-                #     d[c[0]] = 1
         return d
 
     @property

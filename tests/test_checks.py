@@ -12,6 +12,7 @@ from hyperglot.checks.check_brahmi_conjuncts import Check as CheckBrahmiConjunct
 from hyperglot.checks.check_brahmi_halfforms import Check as CheckBrahmiHalfforms
 from hyperglot.checks.check_combination_marks import Check as CheckCombinationMarks
 from hyperglot.language import Language
+from hyperglot.orthography import Orthography
 from hyperglot.checker import CharsetChecker
 from hyperglot.shaper import Shaper
 
@@ -420,3 +421,15 @@ def test_cluster_mark_logs(caplog):
     assert mark_check.check_cluster_mark_attachment("φ्φ", eczar_shaper) is False
     assert "Mark shaping for cluster" in caplog.records[-1].message
     assert "missing 2 glyphs" in caplog.records[-1].message
+
+
+def test_precheck():
+    # This orthography will opt in to the mark check because the defaults set
+    # empty base/aux/mark attributes, but the check should not run if they are
+    # all empty
+    empty = Orthography(data={})
+    assert CheckMarkAttachment().precheck(empty, CharsetChecker([])) is False
+
+    # Same for a Davanagari orthography with an empty combinations list
+    deva = Orthography(data={"script": "Devanagari", "combinations": []})
+    assert CheckBrahmiConjuncts().precheck(deva, CharsetChecker([])) is False

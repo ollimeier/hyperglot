@@ -15,7 +15,8 @@ log.setLevel(logging.WARNING)
 
 class Check(CheckBase):
     """
-    Check to confirm mark attachment between base (and auxiliary) characters and marks.
+    Check to confirm mark attachment between base (and auxiliary) characters
+    and marks.
 
     - By default checks only base + mark.
     - By default checks only unencoded base + mark combinations, but can be
@@ -33,6 +34,26 @@ class Check(CheckBase):
     requires_font = True
     priority = 30
     logger = logging.getLogger("hyperglot.reporting.marks")
+
+    def precheck(
+        self,
+        orthography: Orthography,
+        checker: Checker,
+        **kwargs,
+    ) -> bool:
+        super().precheck(orthography, checker, **kwargs)
+
+        if all(
+            (
+                len(orthography.base_chars) == 0,
+                len(orthography.auxiliary_chars) == 0,
+                len(orthography.base_marks) == 0,
+                len(orthography.auxiliary_marks) == 0,
+            )
+        ):
+            return False
+
+        return True
 
     def check(self, orthography: Orthography, checker: Checker, **kwargs) -> bool:
         """
