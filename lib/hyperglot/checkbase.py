@@ -1,6 +1,14 @@
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING
 
 from hyperglot import SupportLevel
+
+if TYPE_CHECKING:
+    from hyperglot.orthography import Orthography
+    from hyperglot.checker import Checker
+    from hyperglot.shaper import Shaper
 
 
 class CheckBase:
@@ -63,8 +71,8 @@ class CheckBase:
 
     def precheck(
         self,
-        orthography: "hyperglot.Orthography",
-        checker: "hyperglot.Checker",
+        orthography: Orthography,
+        checker: Checker,
         **kwargs,
     ) -> bool:
         """
@@ -84,8 +92,8 @@ class CheckBase:
 
     def check(
         self,
-        orthography: "hyperglot.Orthography",
-        checker: "hyperglot.Checker",
+        orthography: Orthography,
+        checker: Checker,
         **kwargs,
     ) -> bool:
         """
@@ -103,7 +111,7 @@ class CheckBase:
 
         return False
 
-    def check_all_render(self, input: str, shaper: "hyperglot.Shaper") -> bool:
+    def check_all_render(self, input: str, shaper: Shaper) -> bool:
         """
         Check an input string renders in the font without leaving any notdef or
         dotted circles. As a fairly general check this may be useful in

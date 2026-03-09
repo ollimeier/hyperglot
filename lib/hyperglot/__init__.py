@@ -1,6 +1,7 @@
 """
 Gather a few package wide constants.
 """
+
 import re
 from os import path
 from enum import Enum
@@ -17,6 +18,7 @@ LANGUAGE_CACHE_FILE = ".hyperglot-cache"
 
 # ~~DONE Refactor these levels and status as Enum's~~
 # TODO Eventaully remove deprecated "CONSTANTS"
+
 
 class SupportLevel(AllChoicesEnumMixin, Enum):
     """
@@ -117,6 +119,7 @@ RE_MULTIPLE_SPACES = re.compile(r"\s{2,}")
 from hyperglot.languages import Languages
 from hyperglot.language import Language
 from hyperglot.orthography import Orthography
+from hyperglot.checker import FontChecker, CharsetChecker
 
 __all__ = [
     Languages,
@@ -126,4 +129,6 @@ __all__ = [
     LanguageValidity,
     LanguageStatus,
     OrthographyStatus,
+    FontChecker,
+    CharsetChecker,
 ]

@@ -93,9 +93,7 @@ class Checker:
             if fulfills and "attributes" in check.conditions:
                 # If _none_ of the attributes exist, the check is not required
                 # to run.
-                if not any(
-                    [a in orthography for a in check.conditions["attributes"]]
-                ):
+                if not any([a in orthography for a in check.conditions["attributes"]]):
                     fulfills = False
 
             if fulfills:
