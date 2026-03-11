@@ -4,6 +4,7 @@
 - DATA: "unknown" allowed for Language speaker counts where cannonically there is no data (note: by contrast, omitting the `speaker` attribute communicates the data is incomplete in that regard)
 - DATA: No commas in language names/preferred_names
 - DATA: Nepali and Zaza added as macrolanguages
+- DATA: Removed stray Latin chars in Japanese Hiragana orthography
 - TWEAK: Upgraded to `pyproject.toml` config
 - TWEAK: `Checker._get_checks_for_orthography` redefined as class method, to allow for easier inspecting of what checks are opted in an orthgraphy
 
