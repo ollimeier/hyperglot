@@ -1,32 +1,28 @@
 import logging
 
-from hyperglot.checkbase import CheckBase
+from hyperglot.checkbase import BrahmiBaseCheck
 from hyperglot.shaper import Shaper
 
 log = logging.getLogger(__name__)
 
 
-class Check(CheckBase):
+class Check(BrahmiBaseCheck):
     """
     Check to confirm halfform shaping for unencoded combinations, e.g.
     consonant + virama in Devanagari.
 
     To find the half form constituents the checks looks at the 'combinations'
-    orthography attribute and filters for clusters of the form 
+    orthography attribute and filters for clusters of the form
     consonant + virama.
     """
 
-    conditions = {
-        "script": "Devanagari",
-        "attributes": ("combinations",),
-    }
-    requires_font = True
+    # conditions and requires_font from BrahmiBaseCheck
+
     priority = 50
     logger = logging.getLogger("hyperglot.reporting.halfforms")
 
     def check(self, orthography, checker, **kwargs):
-        if not orthography.combinations:
-            return True
+        super().check(orthography, checker, **kwargs)
 
         for h in filter(self.filter_halfforms, orthography.combinations.keys()):
             if not self.check_halfform(h, checker.shaper):

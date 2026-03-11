@@ -2,14 +2,15 @@ import re
 import logging
 from typing import Tuple
 
-from hyperglot.checkbase import CheckBase
+from hyperglot.checkbase import BrahmiBaseCheck
+from hyperglot.checker import Checker
 from hyperglot.orthography import Orthography
 from hyperglot.shaper import Shaper
 
 log = logging.getLogger(__name__)
 
 
-class Check(CheckBase):
+class Check(BrahmiBaseCheck):
     """
     Check to confirm conjunct formation for unencoded combinations, e.g.
     consonant + virama + consonant in Devanagari, based off the 'combinations'
@@ -18,16 +19,24 @@ class Check(CheckBase):
     The threshold option can be used to fine tune the granularity of the check,
     e.g. allowing for less frequently used conjuncts to not cause the check to
     fail, if below this threshold (based on 'combinations' frequency data from
-    a parsed language corpus) 
+    a parsed language corpus)
     """
 
-    conditions = {
-        "script": "Devanagari",
-        "attributes": ("combinations",),
-    }
-    requires_font = True
+    # conditions and requires_font from BrahmiBaseCheck
+
     priority = 50
     logger = logging.getLogger("hyperglot.reporting.conjuncts")
+
+    def precheck(self, orthography: Orthography, checker: Checker, **kwargs) -> bool:
+        super().precheck(orthography, checker, **kwargs)
+
+        self.conjuncts = dict(
+            filter(self.filter_conjuncts, orthography.combinations.items())
+        )
+        if self.conjuncts == {}:
+            return False
+
+        return True
 
     def check(self, orthography: Orthography, checker, **kwargs) -> bool:
         """
@@ -48,24 +57,16 @@ class Check(CheckBase):
         Ka + virama + Ka → KKa
         ZWJ ensures a half form is rendered instead:
         Ka + virama + ZWJ + Ka → K- + Ka
-
         """
-        options = self._get_options(**kwargs)
 
-        if not orthography.combinations:
-            return True
-        conjuncts = dict(
-            filter(self.filter_conjuncts, orthography.combinations.items())
-        )
-        if conjuncts == {}:
-            return True
+        super().check(orthography, checker, **kwargs)
 
         # Iterate all syllables to provide reporting.
         # TODO exit early if no reporting is set
 
         fails_over_threshold = False
 
-        for conjunct, frequency in conjuncts.items():
+        for conjunct, frequency in self.conjuncts.items():
             fails = False
             # Ensure no .notdef are left over
             if not self.check_all_render(conjunct, checker.shaper):
@@ -75,9 +76,9 @@ class Check(CheckBase):
                 fails = True
 
             if fails:
-                fmt_threshold = str(options["threshold"]).format(".5f")
+                fmt_threshold = str(self.options["threshold"]).format(".5f")
 
-                if frequency > options["threshold"]:
+                if frequency > self.options["threshold"]:
                     log.error(
                         f"Conjunct '{conjunct}' ({frequency:.5f}) does not shape "
                         f"but is required by frequency threshold ({fmt_threshold})."

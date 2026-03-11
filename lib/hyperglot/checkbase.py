@@ -1,7 +1,14 @@
-import logging
+from __future__ import annotations
 
-from hyperglot import SupportLevel, LanguageValidity
-from hyperglot.shaper import Shaper
+import logging
+from typing import TYPE_CHECKING
+
+from hyperglot import SupportLevel
+
+if TYPE_CHECKING:
+    from hyperglot.orthography import Orthography
+    from hyperglot.checker import Checker
+    from hyperglot.shaper import Shaper
 
 
 class CheckBase:
@@ -58,24 +65,60 @@ class CheckBase:
 
     def __init__(self):
         # Use any module logger to output code issues, append to self.logs
-        # reporting entries that should get output "higher" up in the check run.
+        # reporting entries that should get output "higher" up in the check
+        # run.
         self.logs = []
 
-    def prepare(self, orthography, checker):
+    def precheck(
+        self,
+        orthography: Orthography,
+        checker: Checker,
+        **kwargs,
+    ) -> bool:
         """
-        Optional method to prepare the check for a given orthography and checker,
-        e.g. by precomputing some data or doing some pre-checks.
+        Optional subclass method to precheck the check for a given orthography
+        and checker, e.g. by precomputing some data or doing some pre-checks.
+
+        Return True if the check should run, False if it should be skipped as
+        unnecessary.
+
+        When subclassing, run this method first, and return False to skip the
+        check early if it is not necessary.
         """
+
+        # The compiled options for this check, after a orthography and checker
+        # have been passed.
+        self.options = self._get_options(**kwargs)
+
+        # Subclassing this method must return a bool here.
         return True
 
-    def check(self):
-        raise NotImplementedError("Checks need to implement check method!")
+    def check(
+        self,
+        orthography: Orthography,
+        checker: Checker,
+        **kwargs,
+    ) -> bool:
+        """
+        Run the check, return True if it passes, False if it fails.
+
+        Subclasses should implement the actual check logic here, and call
+        this super class first, optionally overwriting also precheck to
+        prepare data.
+        """
+
+        # Run precheck to prepare check and determine early on if it indicated
+        # it can be skipped altogether (passes).
+        if not self.precheck(orthography, checker, **kwargs):
+            return True
+
+        return False
 
     def check_all_render(self, input: str, shaper: Shaper) -> bool:
         """
         Check an input string renders in the font without leaving any notdef or
-        dotted circles. As a fairly general check this may be useful in multiple
-        check implementations.
+        dotted circles. As a fairly general check this may be useful in
+        multiple check implementations.
         """
         dotted_circle_cp = shaper.font.get_nominal_glyph(ord(self.DOTTED_CIRCLE))
 
@@ -123,3 +166,27 @@ class CheckBase:
                 return category
 
         return None
+
+
+class BrahmiBaseCheck(CheckBase):
+    """
+    A more specific base check for Brahmi scripts.
+    """
+
+    conditions = {
+        "script": "Devanagari",
+        "attributes": ("combinations",),
+    }
+    requires_font = True
+
+    def precheck(
+        self,
+        orthography: Orthography,
+        checker: Checker,
+        **kwargs,
+    ) -> bool:
+        super().precheck(orthography, checker, **kwargs)
+        if not orthography.combinations:
+            return False
+
+        return True

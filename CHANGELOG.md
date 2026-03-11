@@ -7,6 +7,7 @@
 - DATA: Removed stray Latin chars in Japanese Hiragana orthography
 - TWEAK: Upgraded to `pyproject.toml` config
 - TWEAK: `Checker._get_checks_for_orthography` redefined as class method, to allow for easier inspecting of what checks are opted in an orthgraphy
+- TWEAK: `Check` now have `precheck` method to initialize and indicate pass early on
 
 ## 0.8.0 (17.02.2026)
 - LICENSE: Relicensed under Apache License 2.0

@@ -44,7 +44,7 @@ class Checker:
 
     def __init__(self, fontpath: str = None, characters: List = None):
         self.fontpath = fontpath
-        self.characters = characters
+        self.characters = characters if characters is not None else []
         self.font = None
         self.shaper = None
 
@@ -89,10 +89,12 @@ class Checker:
                 if "script" in check.conditions:
                     if check.conditions["script"] != orthography["script"]:
                         fulfills = False
-            if "attributes" in check.conditions["attributes"]:
-                for a in check.conditions["attributes"]:
-                    if a not in orthography:
-                        fulfills = False
+
+            if fulfills and "attributes" in check.conditions:
+                # If _none_ of the attributes exist, the check is not required
+                # to run.
+                if not any([a in orthography for a in check.conditions["attributes"]]):
+                    fulfills = False
 
             if fulfills:
                 checks.append((module_name, check.priority, c.Check()))

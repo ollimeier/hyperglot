@@ -4,12 +4,14 @@ Basic Language support checks.
 TODO: Many of these should be refactored/moved to test_checks!
 """
 
+from email.mime import base
 import os
 import logging
 import pytest
 import unicodedata as uni
 from hyperglot import SupportLevel, OrthographyStatus
 from hyperglot.language import Language
+from hyperglot.orthography import Orthography
 from hyperglot.parse import character_list_from_string, parse_font_chars, parse_marks
 from hyperglot.checker import CharsetChecker, FontChecker, Checker
 
@@ -530,6 +532,40 @@ def test_checker_load_checks():
     )
     assert "check_coverage" in [c[0] for c in fin_checks]
     assert "check_brahmi_conjuncts" not in [c[0] for c in fin_checks]
+
+
+def test_checker_load_checks_attributes():
+    # Note that _get_checks_for_orthography just examines the presence of
+    # attributes, not their content or if they are empty
+
+    # A fictional empty orthography should opt for coverage and mark checks
+    empty = Orthography(data={})
+    empty_checks = Checker._get_checks_for_orthography(
+        empty, perform_shaping_checks=True
+    )
+    assert "check_coverage" in [c[0] for c in empty_checks]
+    assert "check_mark_attachment" in [c[0] for c in empty_checks]
+    assert "check_arabic_joining" not in [c[0] for c in empty_checks]
+    assert "check_brahmi_conjuncts" not in [c[0] for c in empty_checks]
+
+    # A script + combinations are needed for these, so these should not opt in
+    # on attribute alone
+    combs = Orthography(data={"combinations": []})
+    combs_checks = Checker._get_checks_for_orthography(
+        combs, perform_shaping_checks=True
+    )
+    assert "check_brahmi_conjuncts" not in [c[0] for c in combs_checks]
+    assert "check_brahmi_halfforms" not in [c[0] for c in combs_checks]
+    assert "check_combination_marks" not in [c[0] for c in combs_checks]
+
+    # With script, these should opt in
+    combs_deva = Orthography(data={"combinations": [], "script": "Devanagari"})
+    combs_deva_checks = Checker._get_checks_for_orthography(
+        combs_deva, perform_shaping_checks=True
+    )
+    assert "check_brahmi_conjuncts" in [c[0] for c in combs_deva_checks]
+    assert "check_brahmi_halfforms" in [c[0] for c in combs_deva_checks]
+    assert "check_combination_marks" in [c[0] for c in combs_deva_checks]
 
 
 def test_checker_runs():
