@@ -11,7 +11,9 @@ Hyperglot is available as:
 📖 [Learn more about Hyperglot](https://hyperglot.rosettatype.com/about)  
 🙋 [Read the FAQ](FAQ.md)
 
-💰 [Sponsor via GitHub](https://github.com/sponsors/rosettatype) or directly via [Hyperglot sponsorship](https://hyperglot.rosettatype.com/sponsor). Any and all contributions are much appreciated! 🙏
+## Sponsor
+
+💰 [Sponsor via GitHub](https://github.com/sponsors/rosettatype) or directly via [Stripe](https://donate.stripe.com/3cI00j3PD0w53fwdx8dfG0f). Any and all contributions are much appreciated! 🙏
 
 ## Data validity & contributing
 
