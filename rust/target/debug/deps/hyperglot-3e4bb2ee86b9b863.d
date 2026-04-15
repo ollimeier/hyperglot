@@ -24,3 +24,4 @@ src/parse.rs:
 src/shaper.rs:
 
 # env-dep:CARGO_MANIFEST_DIR=/home/runner/work/hyperglot/hyperglot/rust
+# env-dep:CARGO_PKG_VERSION=0.8.1
