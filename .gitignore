@@ -13,4 +13,4 @@ venv
 .coverage
 .tox/
 tests/*.prof
-.hyperglot-cache
+.hyperglot-cacherust/target/
