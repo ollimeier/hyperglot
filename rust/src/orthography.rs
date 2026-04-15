@@ -446,12 +446,17 @@ fn resolve_inherited_attributes(
             replacement
         };
 
+        // `beginning` is a byte offset from regex; subtract 1 for the space before the tag
         let before = if beginning > 0 {
-            resolved[..beginning - 1].to_string()
+            let safe_end = (beginning - 1).min(resolved.len());
+            resolved[..safe_end].to_string()
         } else {
             String::new()
         };
-        let after_start = beginning + length + 1;
+        let after_start = beginning
+            .checked_add(length)
+            .and_then(|v| v.checked_add(1))
+            .unwrap_or(resolved.len());
         let after = if after_start <= resolved.len() {
             resolved[after_start..].to_string()
         } else {

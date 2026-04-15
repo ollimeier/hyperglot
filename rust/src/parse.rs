@@ -7,8 +7,9 @@ use crate::loader::load_joining_types;
 
 pub const MARK_BASE_CHAR: char = '◌';
 
+// The pattern includes U+02BD (ʽ modifier letter reversed comma) used in some ISO codes
 static RE_INHERITANCE_TAG: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r"<([A-Za-zʽ' ]*)>").unwrap());
+    Lazy::new(|| Regex::new(r"<([A-Za-z\u{02BD}' ]*)>").unwrap());
 static RE_MULTIPLE_SPACES: Lazy<Regex> = Lazy::new(|| Regex::new(r"\s{2,}").unwrap());
 
 pub fn list_unique(v: Vec<String>) -> Vec<String> {

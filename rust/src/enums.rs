@@ -1,6 +1,6 @@
 pub const MARK_BASE: char = '◌'; // U+25CC
 pub const CHARACTER_ATTRIBUTES: &[&str] = &["base", "auxiliary", "numerals", "punctuation", "currency"];
-pub const VERSION: &str = "0.8.1";
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum SupportLevel {
